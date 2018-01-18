@@ -50,9 +50,9 @@ public class BenchmarkArraysSort {
 
     @Test
     public void testSort() {
-        int[] data = createRandomIntData(10);
-        //ArraysSort.introSort(data, 0, data.length, (l, r) -> (Integer.compare(l, r)));
-        ArraysSort.heapSort(data, 0, data.length, (l, r) -> (Integer.compare(l, r)));
+        int[] data = createRandomIntData(10000000);
+        ArraysSort.introSort(data, 0, data.length, (l, r) -> (Integer.compare(l, r)));
+        //ArraysSort.heapSort(data, 0, data.length, (l, r) -> (Integer.compare(l, r)));
         for (int i = 0; i < data.length - 1; ++i) {
             if (data[i] > data[i + 1]) {
                 assertTrue(false);

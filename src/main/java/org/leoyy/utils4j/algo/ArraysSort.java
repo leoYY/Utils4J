@@ -14,8 +14,7 @@ public class ArraysSort {
     }
 
     public static void introSort(int[] array, int from, int to, final IntCompartor comp) {
-        int depLimit = lg(to - from) * 2;
-        introSortLoop(array, from, to, comp, depLimit);
+        introSortLoop(array, from, to, comp, lg(to - from) * 2);
     }
 
     private static void swap(int[] array, int l, int r) {
@@ -25,27 +24,36 @@ public class ArraysSort {
     }
 
     private static void introSortLoop(int[] array, int from, int to, final IntCompartor comp, int depLimit) {
+        if (to <= from) {
+            return;
+        }
+        depLimit --;
         if (depLimit <= 0) {
             heapSort(array, from, to, comp);
             return;
         }
-        while (to - from < MIN_LEN) {
+        while (to - from > MIN_LEN) {
             int mid = from + (to - from) / 2;
             {
-                if (comp.compare(array[from], array[to]) < 0) {
-                    if (comp.compare(array[mid], array[from]) < 0) {
-                        mid = from;
-                    } else if (comp.compare(array[to], array[mid]) < 0) {
-                        mid = to;
+                int beg = from + 1;
+                int end = to - 1;
+                if (comp.compare(array[beg], array[mid]) < 0) {
+                    if (comp.compare(array[mid], array[end]) < 0) {
+                        mid = mid;
+                    } else if (comp.compare(array[beg], array[end]) < 0) {
+                        mid = end;
+                    } else {
+                        mid = beg;
                     }
-                } else if (comp.compare(array[mid], array[to]) < 0) {
-                    mid = to;
-                } else if (comp.compare(array[from], array[mid]) < 0) {
-                    mid = from;
+                } else if (comp.compare(array[beg], array[end]) < 0) {
+                    mid = beg;
+                } else if (comp.compare(array[mid], array[end]) < 0) {
+                    mid = end;
                 } else {
                     mid = mid;
                 }
             }
+            int mVal = array[mid];
             if (mid != from) {
                 swap(array, mid, from);
             }
@@ -53,11 +61,11 @@ public class ArraysSort {
             int rtr = to;
             int privot;
             while (true) {
-                while (comp.compare(array[ltr], array[mid]) < 0) {
+                while (comp.compare(array[ltr], mVal) < 0) {
                     ltr++;
                 }
                 rtr--;
-                while (comp.compare(array[mid], array[rtr]) < 0) {
+                while (comp.compare(mVal, array[rtr]) < 0) {
                     rtr--;
                 }
 
@@ -68,7 +76,7 @@ public class ArraysSort {
                 swap(array, ltr, rtr);
                 ltr++;
             }
-            introSortLoop(array, privot, to, comp, depLimit - 1);
+            introSortLoop(array, privot, to, comp, depLimit);
             to = privot;
         }
         if (to - from > 1) {
