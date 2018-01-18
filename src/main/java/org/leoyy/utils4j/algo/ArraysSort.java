@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * Created by yuanyi on 2018/1/18.
  */
-public class ArraysSort<T> {
+public class ArraysSort {
 
     private static final int MIN_LEN = 16;
 
@@ -13,18 +13,18 @@ public class ArraysSort<T> {
         return (int)Math.floor(Math.log(length) / Math.log(2));
     }
 
-    public void introSort(T[] array, int from, int to, Comparator<T> comp) {
+    public static void introSort(int[] array, int from, int to, final IntCompartor comp) {
         int depLimit = lg(to - from) * 2;
         introSortLoop(array, from, to, comp, depLimit);
     }
 
-    private void swap(T[] array, int l, int r) {
-        T temp = array[l];
+    private static void swap(int[] array, int l, int r) {
+        int temp = array[l];
         array[l] = array[r];
         array[r] = temp;
     }
 
-    private void introSortLoop(T[] array, int from, int to, Comparator<T> comp, int depLimit) {
+    private static void introSortLoop(int[] array, int from, int to, final IntCompartor comp, int depLimit) {
         if (depLimit <= 0) {
             heapSort(array, from, to, comp);
             return;
@@ -77,21 +77,68 @@ public class ArraysSort<T> {
         return;
     }
 
-    private int leafSearch(T[] array, int from, int to, Comparator<T> comp) {
-
+    private static int leafSearch(int[] array, int from, int to, final IntCompartor comp) {
+        int start = from;
+        int lchild = 2 * start + 1;
+        int rchild = 2 * start + 2;
+        while (lchild <= to) {
+            if (rchild <= to && comp.compare(array[rchild], array[lchild]) > 0) {
+                start = rchild;
+            } else {
+                start = lchild;
+            }
+            lchild = 2 * start + 1;
+            rchild = 2 * start + 2;
+        }
+        return start;
     }
 
-    private void siftDown(T[] array, int from, int to, Comparator<T> comp) {
-
+    private static void siftDown(int[] array, int from, int to, final IntCompartor comp) {
+        int start = leafSearch(array, from, to, comp);
+        while (comp.compare(array[from], array[start]) > 0) {
+            start = (int)Math.floor((start - 1) / 2);
+        }
+        int temp = array[start];
+        array[start] = array[from];
+        while (start > from) {
+            int parent = (int) Math.floor((start - 1) / 2);
+            int t = array[parent];
+            array[parent] = temp;
+            temp = t;
+            start = parent;
+        }
     }
 
-    private void makeHeap(T[] array, int from, int to, Comparator<T> comp) {}
-
-    public void heapSort(T[] array, int from, int to, Comparator<T> comp) {
+    private static void makeHeap(int[] array, int from, int to, final IntCompartor comp) {
+        int start = (int)Math.floor((to - 1 - 1) / 2);
+        while (start >= from) {
+            siftDown(array, start, to - 1, comp);
+            start --;
+        }
     }
 
-    public void selectSort(T[] array, int from, int to, Comparator<T> comp) {
+    public static void heapSort(int[] array, int from, int to, final IntCompartor comp) {
+        makeHeap(array, from, to, comp);
+        int end = to - 1;
+        while (end > from) {
+            swap(array, end, from);
+            end --;
+            siftDown(array, from, end, comp);
+        }
+    }
 
+    public static void selectSort(int[] array, int from, int to, final IntCompartor comp) {
+        for (int i = from; i < to - 1; ++i) {
+            int m = i;
+            for (int j = i + 1; j < to; ++j) {
+                if (comp.compare(array[j], array[m]) < 0) {
+                    m = j;
+                }
+            }
+            if (m != i) {
+                swap(array, i, m);
+            }
+        }
     }
 }
 
